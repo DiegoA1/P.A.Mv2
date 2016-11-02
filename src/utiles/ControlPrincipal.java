@@ -1,9 +1,7 @@
 package utiles;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class ControlPrincipal
 {
@@ -68,7 +66,7 @@ public class ControlPrincipal
 			String[] aux = arch[x].split(";");
 			if (arch[x].length() > 1)
 			{
-				saldo = saldoAnterior + Integer.parseInt(aux[aux.length - 3]) - Integer.parseInt(aux[aux.length - 2]);
+				saldo = saldoAnterior + Integer.parseInt(aux[5]) - Integer.parseInt(aux[6]);
 			}
 			for (int z = 0; z < aux.length - 1; z++)
 			{
@@ -100,82 +98,104 @@ public class ControlPrincipal
 	}
 	public String[][] resumenMes()
 	{
-		String[] arch = archivo.entregarProcesado();
-		ArrayList<String> fechas = new ArrayList<String>();
-		ArrayList<String> ings = new ArrayList<String>();
-		ArrayList<String> egrs = new ArrayList<String>();
-		for (int x = 0; x < arch.length; x++)
+		String[][] fin = new String[4][1];
+		if (archivo.leerArchivo().length() > 5)
 		{
-			String fecha = arch[x].split(";")[1];
-			if (!fechas.contains(fecha))
+			String[] arch = archivo.entregarProcesado();
+			ArrayList<String> fechas = new ArrayList<String>();
+			ArrayList<String> ings = new ArrayList<String>();
+			ArrayList<String> egrs = new ArrayList<String>();
+			for (int x = 0; x < arch.length; x++)
 			{
-				fechas.add(fecha);
-				ings.add("0");
-				egrs.add("0");
+				String fecha = arch[x].split(";")[1].split("/")[2] + "-" + arch[x].split(";")[1].split("/")[1];
+				if (!fechas.contains(fecha))
+				{
+					fechas.add(fecha);
+					ings.add("0");
+					egrs.add("0");
+				}
 			}
+			for (int x = 0; x < arch.length; x++)
+			{
+				String fecha = arch[x].split(";")[1].split("/")[2] + "-" + arch[x].split(";")[1].split("/")[1];
+				String ing = arch[x].split(";")[5];
+				String egr = arch[x].split(";")[6];
+				int index = fechas.indexOf(fecha);
+				ings.set(index, String.valueOf(Integer.parseInt(ings.get(index)) + Integer.parseInt(ing)));
+				egrs.set(index, String.valueOf(Integer.parseInt(egrs.get(index)) + Integer.parseInt(egr)));
+			}
+			fin = new String[4][fechas.size()];
+			for (int x = 0; x < fechas.size(); x++)
+			{
+				fin[0][x] = fechas.get(x);
+				fin[1][x] = String.valueOf(Integer.parseInt(ings.get(x)) - Integer.parseInt(egrs.get(x)));
+				fin[2][x] = ings.get(x);
+				fin[3][x] = egrs.get(x);
+			}
+			fin = ordenarSaldos(fin);
 		}
-		for (int x = 0; x < arch.length; x++)
-		{
-			String fecha = arch[x].split(";")[1];
-			String ing = arch[x].split(";")[5];
-			String egr = arch[x].split(";")[6];
-			int index = fechas.indexOf(fecha);
-			ings.set(index, String.valueOf(Integer.parseInt(ings.get(index))+Integer.parseInt(ing)));
-			egrs.set(index, String.valueOf(Integer.parseInt(egrs.get(index))+Integer.parseInt(egr)));
-			
-		}
-		String[][] fin = new String[4][fechas.size()];
-		for(int x = 0; x < fechas.size(); x++)
-		{
-			fin[0][x] = fechas.get(x);
-			fin[1][x] = String.valueOf(Integer.parseInt(ings.get(x))-Integer.parseInt(egrs.get(x)));
-			fin[2][x] = ings.get(x);
-		}
-		
-		fin = ordenarSaldos(fin);
 		return fin;
 	}
 	public String[][] ordenarSaldos(String[][] saldos)
 	{
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-		try
+		boolean swapped = true;
+		int j = 0;
+		String tmp;
+		String tmp1;
+		String tmp2;
+		String tmp3;
+		while (swapped)
 		{
-			boolean swapped = true;
-			int j = 0;
-			String tmp;
-			String tmp1;
-			while (swapped)
+			swapped = false;
+			j++;
+			for (int i = 0; i < saldos[0].length - j; i++)
 			{
-				swapped = false;
-				j++;
-				for (int i = 0; i < saldos[0].length - j; i++)
+				YearMonth f1 = YearMonth.parse(saldos[0][i]);
+				YearMonth f2 = YearMonth.parse(saldos[0][i + 1]);
+				if (f1.isAfter(f2))
 				{
-					if (formatter.parse(saldos[0][i]).after(formatter.parse(saldos[0][i+1])))
-					{
-						tmp = saldos[0][i];
-						tmp1 = saldos[1][i];
-						saldos[0][i] = saldos[0][i + 1];
-						saldos[1][i] = saldos[1][i + 1];
-						saldos[0][i + 1] = tmp;
-						saldos[1][i + 1] = tmp1;
-						swapped = true;
-					}
+					tmp = saldos[0][i];
+					tmp1 = saldos[1][i];
+					tmp2 = saldos[2][i];
+					tmp3 = saldos[3][i];
+					saldos[0][i] = saldos[0][i + 1];
+					saldos[1][i] = saldos[1][i + 1];
+					saldos[2][i] = saldos[2][i + 1];
+					saldos[3][i] = saldos[3][i + 1];
+					saldos[0][i + 1] = tmp;
+					saldos[1][i + 1] = tmp1;
+					saldos[2][i + 1] = tmp2;
+					saldos[3][i + 1] = tmp3;
+					swapped = true;
 				}
 			}
-			
-		} catch (ParseException e)
-		{
-			e.printStackTrace();
 		}
 		return saldos;
 	}
-	public void prueba()
+	public int[] resumenDoc()
 	{
-		String[][] prueba = resumenMes();
-		for(int x = 0; x < prueba[0].length; x++)
+		String[] arch = archivo.entregarProcesado();
+		int[] docs = { 0, 0, 0};
+		if (archivo.leerArchivo().length() > 5)
 		{
-			System.out.println(prueba[0][x]+"    "+prueba[1][x]);
+			for (int x = 0; x < arch.length; x++)
+			{
+				String[] aux = arch[x].split(";");
+				switch(aux[2])
+				{
+				case "Efectivo":
+					docs[0] += Integer.parseInt(aux[5])-Integer.parseInt(aux[6]);
+					break;
+				case "Transferencia":
+					docs[1] += Integer.parseInt(aux[5])-Integer.parseInt(aux[6]);
+					break;
+				case "Credito":
+					docs[2] += Integer.parseInt(aux[5])-Integer.parseInt(aux[6]);
+					break;
+				}
+			}
 		}
+		return docs;
 	}
 	public void getRuta()
 	{

@@ -1,5 +1,6 @@
 package visual;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
@@ -28,8 +28,14 @@ import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
 import org.jdesktop.swingx.JXDatePicker;
-
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 import utiles.*;
+
+import java.util.ArrayList;
 
 public class Principal
 {
@@ -57,8 +63,8 @@ public class Principal
 	private JTextField fNumber;
 	private JTextField fUsuario;
 	private JPanel graph;
-	private JPanel graphDoc;
-	private JPanel graphMes;
+	private ChartPanel graphDoc;
+	private ChartPanel graphMes;
 	private JTextField iM1;
 	private JTextField iM2;
 	private JTextField iM3;
@@ -110,7 +116,8 @@ public class Principal
 	private JXDatePicker jXDatePicker1;
 	private JXDatePicker jXDatePicker2;
 	private String usuario;
-
+	private DefaultCategoryDataset dataSetMes;
+	private DefaultCategoryDataset dataSetDoc;
 	public Principal(String usuario)
 	{
 		this.usuario = usuario;
@@ -153,8 +160,6 @@ public class Principal
 		fNumber = new JTextField();
 		panelResumen = new JPanel();
 		graph = new JPanel();
-		graphMes = new JPanel();
-		graphDoc = new JPanel();
 		tipoGraph = new JComboBox<>();
 		jLabel1 = new JLabel();
 		lMes1 = new JLabel();
@@ -420,25 +425,15 @@ public class Principal
 										.addComponent(eliminar)))
 						.addGap(29, 29, 29)));
 		panel.add(panelCartola, "card2");
+		graphMes = crearGraphMes();
+		graphDoc = crearGraphDoc();
 		panelResumen.setBackground(new Color(21, 21, 21));
 		panelResumen.setForeground(new Color(255, 255, 255));
 		graph.setBackground(new Color(153, 153, 153));
 		graph.setLayout(new CardLayout());
-		graphMes.setBackground(new Color(0, 0, 0));
-		GroupLayout graphMesLayout = new GroupLayout(graphMes);
-		graphMes.setLayout(graphMesLayout);
-		graphMesLayout.setHorizontalGroup(
-				graphMesLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 719, Short.MAX_VALUE));
-		graphMesLayout.setVerticalGroup(
-				graphMesLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 449, Short.MAX_VALUE));
 		graph.add(graphMes, "Mes");
 		graphDoc.setBackground(new Color(255, 255, 255));
-		GroupLayout graphDocLayout = new GroupLayout(graphDoc);
-		graphDoc.setLayout(graphDocLayout);
-		graphDocLayout.setHorizontalGroup(
-				graphDocLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 719, Short.MAX_VALUE));
-		graphDocLayout.setVerticalGroup(
-				graphDocLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 449, Short.MAX_VALUE));
+		graphDoc.setLayout(new BorderLayout());
 		graph.add(graphDoc, "Documento");
 		tipoGraph.setFont(new Font("Eras Light ITC", 0, 14)); // NOI18N
 		tipoGraph.setModel(new DefaultComboBoxModel<>(new String[] { "Mes", "Documento" }));
@@ -503,224 +498,278 @@ public class Principal
 		GroupLayout panelResumenLayout = new GroupLayout(panelResumen);
 		panelResumen.setLayout(panelResumenLayout);
 		panelResumenLayout
-				.setHorizontalGroup(
-						panelResumenLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addGroup(GroupLayout.Alignment.TRAILING, panelResumenLayout.createSequentialGroup()
-										.addContainerGap().addGroup(panelResumenLayout.createParallelGroup(
-												GroupLayout.Alignment.LEADING)
-												.addComponent(lIng2,
-														GroupLayout.Alignment.TRAILING)
-												.addGroup(GroupLayout.Alignment.TRAILING,
-														panelResumenLayout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addComponent(lSaldo2).addComponent(lEgr2)))
-										.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
-										.addGroup(panelResumenLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-												.addGroup(panelResumenLayout.createSequentialGroup().addGap(19, 19, 19)
-														.addComponent(lMes1).addGap(43, 43, 43).addComponent(lMes2)
-														.addGap(49, 49, 49).addComponent(lMes3).addGap(40, 40, 40)
-														.addComponent(lMes4).addGap(44, 44, 44).addComponent(lMes5)
-														.addGap(43, 43, 43).addComponent(lMes6))
-												.addGroup(panelResumenLayout.createSequentialGroup()
-														.addGroup(panelResumenLayout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addComponent(sM1, GroupLayout.PREFERRED_SIZE, 63,
-																		GroupLayout.PREFERRED_SIZE)
-																.addComponent(eM1, GroupLayout.PREFERRED_SIZE, 63,
-																		GroupLayout.PREFERRED_SIZE)
-																.addComponent(iM1, GroupLayout.PREFERRED_SIZE, 63,
-																		GroupLayout.PREFERRED_SIZE))
-														.addGap(18, 18, 18)
-														.addGroup(panelResumenLayout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addComponent(sM2, GroupLayout.PREFERRED_SIZE, 63,
-																		GroupLayout.PREFERRED_SIZE)
-																.addComponent(eM2, GroupLayout.PREFERRED_SIZE, 63,
-																		GroupLayout.PREFERRED_SIZE)
-																.addComponent(iM2, GroupLayout.PREFERRED_SIZE, 63,
-																		GroupLayout.PREFERRED_SIZE))
-														.addGap(18, 18, 18)
-														.addGroup(panelResumenLayout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addComponent(sM3, GroupLayout.PREFERRED_SIZE, 63,
-																		GroupLayout.PREFERRED_SIZE)
-																.addComponent(eM3, GroupLayout.PREFERRED_SIZE, 63,
-																		GroupLayout.PREFERRED_SIZE)
-																.addComponent(iM3, GroupLayout.PREFERRED_SIZE, 63,
-																		GroupLayout.PREFERRED_SIZE))
-														.addGap(18, 18, 18)
-														.addGroup(panelResumenLayout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addGroup(panelResumenLayout.createSequentialGroup()
-																		.addComponent(sM4, GroupLayout.PREFERRED_SIZE,
-																				63, GroupLayout.PREFERRED_SIZE)
-																		.addGap(18, 18, 18)
-																		.addComponent(sM5, GroupLayout.PREFERRED_SIZE,
-																				63, GroupLayout.PREFERRED_SIZE)
-																		.addGap(18, 18, 18).addComponent(sM6,
-																				GroupLayout.PREFERRED_SIZE, 63,
-																				GroupLayout.PREFERRED_SIZE))
-																.addGroup(panelResumenLayout.createSequentialGroup()
-																		.addComponent(eM4, GroupLayout.PREFERRED_SIZE,
-																				63, GroupLayout.PREFERRED_SIZE)
-																		.addGap(18, 18, 18)
-																		.addComponent(eM5, GroupLayout.PREFERRED_SIZE,
-																				63, GroupLayout.PREFERRED_SIZE)
-																		.addGap(18, 18, 18).addComponent(eM6,
-																				GroupLayout.PREFERRED_SIZE, 63,
-																				GroupLayout.PREFERRED_SIZE))
-																.addGroup(panelResumenLayout.createSequentialGroup()
-																		.addComponent(iM4, GroupLayout.PREFERRED_SIZE,
-																				63, GroupLayout.PREFERRED_SIZE)
-																		.addGap(18, 18, 18)
-																		.addComponent(iM5, GroupLayout.PREFERRED_SIZE,
-																				63, GroupLayout.PREFERRED_SIZE)
-																		.addGap(18, 18, 18).addComponent(iM6,
-																				GroupLayout.PREFERRED_SIZE, 63,
-																				GroupLayout.PREFERRED_SIZE))))
-												.addGroup(GroupLayout.Alignment.TRAILING,
-														panelResumenLayout.createSequentialGroup()
-																.addComponent(jLabel2, GroupLayout.PREFERRED_SIZE, 310,
-																		GroupLayout.PREFERRED_SIZE)
-																.addGap(81, 81, 81)))
-										.addGap(35, 35, 35)
-										.addGroup(panelResumenLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-												.addGroup(panelResumenLayout.createSequentialGroup()
-														.addComponent(jLabel1).addGap(4, 4, 4).addComponent(tipoGraph,
-																GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE))
-												.addComponent(graph, GroupLayout.PREFERRED_SIZE, 719,
-														GroupLayout.PREFERRED_SIZE))
-										.addGap(6, 6, 6)));
+				.setHorizontalGroup(panelResumenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+						.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelResumenLayout.createSequentialGroup()
+								.addContainerGap().addGroup(panelResumenLayout
+										.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addComponent(
+												lIng2, javax.swing.GroupLayout.Alignment.TRAILING)
+										.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+												panelResumenLayout
+														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(lSaldo2).addComponent(lEgr2)))
+								.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24,
+										Short.MAX_VALUE)
+								.addGroup(panelResumenLayout
+										.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+										.addGroup(javax.swing.GroupLayout.Alignment.TRAILING,
+												panelResumenLayout.createSequentialGroup()
+														.addComponent(
+																jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 310,
+																javax.swing.GroupLayout.PREFERRED_SIZE)
+														.addGap(116, 116, 116))
+										.addGroup(panelResumenLayout.createSequentialGroup()
+												.addGroup(panelResumenLayout
+														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(sM1, javax.swing.GroupLayout.PREFERRED_SIZE, 63,
+																javax.swing.GroupLayout.PREFERRED_SIZE)
+														.addComponent(eM1, javax.swing.GroupLayout.PREFERRED_SIZE, 63,
+																javax.swing.GroupLayout.PREFERRED_SIZE)
+														.addComponent(iM1, javax.swing.GroupLayout.PREFERRED_SIZE, 63,
+																javax.swing.GroupLayout.PREFERRED_SIZE)
+														.addComponent(lMes1))
+												.addGap(18, 18, 18)
+												.addGroup(panelResumenLayout
+														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(lMes2)
+														.addComponent(sM2, javax.swing.GroupLayout.PREFERRED_SIZE, 63,
+																javax.swing.GroupLayout.PREFERRED_SIZE)
+														.addComponent(eM2, javax.swing.GroupLayout.PREFERRED_SIZE, 63,
+																javax.swing.GroupLayout.PREFERRED_SIZE)
+														.addComponent(iM2, javax.swing.GroupLayout.PREFERRED_SIZE, 63,
+																javax.swing.GroupLayout.PREFERRED_SIZE))
+												.addGap(18, 18, 18)
+												.addGroup(panelResumenLayout
+														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(lMes3)
+														.addGroup(panelResumenLayout.createSequentialGroup()
+																.addGroup(panelResumenLayout
+																		.createParallelGroup(
+																				javax.swing.GroupLayout.Alignment.LEADING)
+																		.addComponent(sM3,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				63,
+																				javax.swing.GroupLayout.PREFERRED_SIZE)
+																		.addComponent(eM3,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				63,
+																				javax.swing.GroupLayout.PREFERRED_SIZE)
+																		.addComponent(iM3,
+																				javax.swing.GroupLayout.PREFERRED_SIZE,
+																				63,
+																				javax.swing.GroupLayout.PREFERRED_SIZE))
+																.addGap(18, 18, 18)
+																.addGroup(panelResumenLayout
+																		.createParallelGroup(
+																				javax.swing.GroupLayout.Alignment.LEADING)
+																		.addGroup(panelResumenLayout
+																				.createSequentialGroup()
+																				.addComponent(sM4,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						63,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)
+																				.addGap(18, 18, 18)
+																				.addComponent(sM5,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						63,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)
+																				.addGap(18, 18, 18).addComponent(sM6,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						63,
+																						javax.swing.GroupLayout.PREFERRED_SIZE))
+																		.addGroup(panelResumenLayout
+																				.createSequentialGroup()
+																				.addComponent(eM4,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						63,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)
+																				.addGap(18, 18, 18)
+																				.addComponent(eM5,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						63,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)
+																				.addGap(18, 18, 18).addComponent(eM6,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						63,
+																						javax.swing.GroupLayout.PREFERRED_SIZE))
+																		.addGroup(panelResumenLayout
+																				.createSequentialGroup()
+																				.addGroup(panelResumenLayout
+																						.createParallelGroup(
+																								javax.swing.GroupLayout.Alignment.LEADING)
+																						.addComponent(iM4,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								63,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(lMes4))
+																				.addGap(18, 18, 18)
+																				.addGroup(panelResumenLayout
+																						.createParallelGroup(
+																								javax.swing.GroupLayout.Alignment.LEADING)
+																						.addComponent(iM5,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								63,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(lMes5))
+																				.addGap(18, 18, 18)
+																				.addGroup(panelResumenLayout
+																						.createParallelGroup(
+																								javax.swing.GroupLayout.Alignment.LEADING)
+																						.addComponent(lMes6)
+																						.addComponent(iM6,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								63,
+																								javax.swing.GroupLayout.PREFERRED_SIZE))))))
+												.addGap(35, 35, 35)))
+								.addGroup(panelResumenLayout
+										.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+										.addGroup(panelResumenLayout.createSequentialGroup().addComponent(jLabel1)
+												.addGap(4, 4, 4)
+												.addComponent(tipoGraph, javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addComponent(graph, javax.swing.GroupLayout.PREFERRED_SIZE, 719,
+												javax.swing.GroupLayout.PREFERRED_SIZE))
+								.addGap(6, 6, 6)));
 		panelResumenLayout
 				.setVerticalGroup(
-						panelResumenLayout
-								.createParallelGroup(
-										GroupLayout.Alignment.LEADING)
+						panelResumenLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 								.addGroup(
-										panelResumenLayout.createSequentialGroup().addGroup(panelResumenLayout
-												.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(graph,
-														GroupLayout.PREFERRED_SIZE, 449,
-														GroupLayout.PREFERRED_SIZE)
-												.addGroup(panelResumenLayout.createSequentialGroup().addGap(50, 50, 50)
-														.addComponent(jLabel2, GroupLayout.PREFERRED_SIZE, 52,
-																GroupLayout.PREFERRED_SIZE)
-														.addGap(40, 40, 40)
-														.addGroup(panelResumenLayout
-																.createParallelGroup(GroupLayout.Alignment.BASELINE)
-																.addComponent(lMes1).addComponent(lMes2)
-																.addComponent(lMes3).addComponent(lMes4)
-																.addComponent(lMes5).addComponent(lMes6))
-														.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-														.addGroup(panelResumenLayout
-																.createParallelGroup(GroupLayout.Alignment.LEADING)
-																.addGroup(panelResumenLayout.createSequentialGroup()
+										panelResumenLayout
+												.createSequentialGroup().addGroup(panelResumenLayout
+														.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+														.addComponent(graph, javax.swing.GroupLayout.PREFERRED_SIZE,
+																449, javax.swing.GroupLayout.PREFERRED_SIZE)
+														.addGroup(panelResumenLayout.createSequentialGroup().addGap(50,
+																50, 50)
+																.addComponent(jLabel2,
+																		javax.swing.GroupLayout.PREFERRED_SIZE, 52,
+																		javax.swing.GroupLayout.PREFERRED_SIZE)
+																.addGap(40, 40, 40)
+																.addGroup(panelResumenLayout
+																		.createParallelGroup(
+																				javax.swing.GroupLayout.Alignment.BASELINE)
+																		.addComponent(lMes1).addComponent(lMes2)
+																		.addComponent(lMes3).addComponent(lMes4)
+																		.addComponent(lMes5).addComponent(lMes6))
+																.addPreferredGap(
+																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																.addGroup(panelResumenLayout
+																		.createParallelGroup(
+																				javax.swing.GroupLayout.Alignment.LEADING)
 																		.addGroup(panelResumenLayout
-																				.createParallelGroup(
-																						GroupLayout.Alignment.BASELINE)
-																				.addComponent(iM1,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(iM2,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(iM4,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(iM5,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(iM6,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE))
-																		.addPreferredGap(
-																				LayoutStyle.ComponentPlacement.RELATED)
-																		.addGroup(panelResumenLayout
-																				.createParallelGroup(
-																						GroupLayout.Alignment.BASELINE)
-																				.addComponent(eM1,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(eM2,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(eM4,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(eM5,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(eM6,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE))
-																		.addPreferredGap(
-																				LayoutStyle.ComponentPlacement.RELATED)
-																		.addGroup(panelResumenLayout
-																				.createParallelGroup(
-																						GroupLayout.Alignment.BASELINE)
-																				.addComponent(sM1,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(sM2,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(sM4,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(sM5,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)
-																				.addComponent(sM6,
-																						GroupLayout.PREFERRED_SIZE,
-																						GroupLayout.DEFAULT_SIZE,
-																						GroupLayout.PREFERRED_SIZE)))
-																.addGroup(panelResumenLayout.createSequentialGroup()
-																		.addComponent(lIng2)
-																		.addPreferredGap(
-																				LayoutStyle.ComponentPlacement.RELATED)
-																		.addGroup(panelResumenLayout
-																				.createParallelGroup(
-																						GroupLayout.Alignment.LEADING)
+																				.createSequentialGroup()
 																				.addGroup(panelResumenLayout
-																						.createSequentialGroup()
-																						.addGap(26, 26, 26)
-																						.addComponent(lSaldo2))
-																				.addComponent(lEgr2)))
-																.addGroup(panelResumenLayout.createSequentialGroup()
-																		.addComponent(iM3, GroupLayout.PREFERRED_SIZE,
-																				GroupLayout.DEFAULT_SIZE,
-																				GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(
-																				LayoutStyle.ComponentPlacement.RELATED)
-																		.addComponent(eM3, GroupLayout.PREFERRED_SIZE,
-																				GroupLayout.DEFAULT_SIZE,
-																				GroupLayout.PREFERRED_SIZE)
-																		.addPreferredGap(
-																				LayoutStyle.ComponentPlacement.RELATED)
-																		.addComponent(sM3, GroupLayout.PREFERRED_SIZE,
-																				GroupLayout.DEFAULT_SIZE,
-																				GroupLayout.PREFERRED_SIZE)))))
+																						.createParallelGroup(
+																								javax.swing.GroupLayout.Alignment.BASELINE)
+																						.addComponent(iM1,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(iM2,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(iM4,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(iM5,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(iM6,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE))
+																				.addPreferredGap(
+																						javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																				.addGroup(panelResumenLayout
+																						.createParallelGroup(
+																								javax.swing.GroupLayout.Alignment.BASELINE)
+																						.addComponent(eM1,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(eM2,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(eM4,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(eM5,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(eM6,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE))
+																				.addPreferredGap(
+																						javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																				.addGroup(panelResumenLayout
+																						.createParallelGroup(
+																								javax.swing.GroupLayout.Alignment.BASELINE)
+																						.addComponent(sM1,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(sM2,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(sM4,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(sM5,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)
+																						.addComponent(sM6,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)))
+																		.addGroup(panelResumenLayout
+																				.createSequentialGroup()
+																				.addComponent(lIng2)
+																				.addPreferredGap(
+																						javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																				.addGroup(panelResumenLayout
+																						.createParallelGroup(
+																								javax.swing.GroupLayout.Alignment.LEADING)
+																						.addGroup(panelResumenLayout
+																								.createSequentialGroup()
+																								.addGap(26, 26, 26)
+																								.addComponent(lSaldo2))
+																						.addComponent(lEgr2)))
+																		.addGroup(panelResumenLayout
+																				.createSequentialGroup()
+																				.addComponent(iM3,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						javax.swing.GroupLayout.DEFAULT_SIZE,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)
+																				.addPreferredGap(
+																						javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																				.addComponent(eM3,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						javax.swing.GroupLayout.DEFAULT_SIZE,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)
+																				.addPreferredGap(
+																						javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																				.addComponent(sM3,
+																						javax.swing.GroupLayout.PREFERRED_SIZE,
+																						javax.swing.GroupLayout.DEFAULT_SIZE,
+																						javax.swing.GroupLayout.PREFERRED_SIZE)))))
 												.addGap(43, 43, 43)
 												.addGroup(panelResumenLayout
-														.createParallelGroup(GroupLayout.Alignment.BASELINE)
-														.addComponent(tipoGraph, GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+														.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+														.addComponent(tipoGraph, javax.swing.GroupLayout.PREFERRED_SIZE,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																javax.swing.GroupLayout.PREFERRED_SIZE)
 														.addComponent(jLabel1))
-												.addGap(0, 41, Short.MAX_VALUE)));
+												.addGap(0, 65, Short.MAX_VALUE)));
 		panel.add(panelResumen, "card3");
 		panelPrincipal.setBackground(new Color(21, 21, 21));
 		pam.setFont(new Font("LM Roman Caps 10", 1, 60)); // NOI18N
@@ -829,6 +878,9 @@ public class Principal
 	}
 	private void resumenActionPerformed(ActionEvent evt)
 	{
+		actualizarGraphMes();
+		actualizarGraphDoc();
+		llenarResumen();
 		CardLayout cardLayout = (CardLayout) panel.getLayout();
 		cardLayout.show(panel, "card3");
 	}
@@ -854,15 +906,13 @@ public class Principal
 	private void comboActionPerformed(ActionEvent evt)
 	{
 		CardLayout cardLayout = (CardLayout) graph.getLayout();
-		cardLayout.show(graph, (String)tipoGraph.getSelectedItem());
-		crearGraph();
+		cardLayout.show(graph, (String) tipoGraph.getSelectedItem());
 	}
 	private void añadirFila()
 	{
 		ControlPrincipal control = new ControlPrincipal(usuario);
 		SimpleDateFormat formateador = new SimpleDateFormat("dd/MM/yyyy");
 		String fecha = formateador.format(jXDatePicker1.getDate());
-		jXDatePicker1.setDate(new Date());
 		String documento = this.documento.getSelectedItem().toString();
 		String fD = fFD.getText();
 		fFD.setText("");
@@ -909,10 +959,142 @@ public class Principal
 		control.modificarFila(number, fecha, documento, fD, desc, ing, egr);
 		iniciarTabla();
 	}
-	private void crearGraph()
+	private void llenarResumen()
 	{
 		ControlPrincipal control = new ControlPrincipal(usuario);
-		control.prueba();
+		String[][] resumen = control.resumenMes();
+		ArrayList<JLabel> lMeses = new ArrayList<JLabel>();
+		ArrayList<JTextField> fIngresos = new ArrayList<JTextField>();
+		ArrayList<JTextField> fEgresos = new ArrayList<JTextField>();
+		ArrayList<JTextField> fSaldo = new ArrayList<JTextField>();
+		lMeses.add(lMes1);
+		lMeses.add(lMes2);
+		lMeses.add(lMes3);
+		lMeses.add(lMes4);
+		lMeses.add(lMes5);
+		lMeses.add(lMes6);
+		fIngresos.add(iM1);
+		fIngresos.add(iM2);
+		fIngresos.add(iM3);
+		fIngresos.add(iM4);
+		fIngresos.add(iM5);
+		fIngresos.add(iM6);
+		fEgresos.add(eM1);
+		fEgresos.add(eM2);
+		fEgresos.add(eM3);
+		fEgresos.add(eM4);
+		fEgresos.add(eM5);
+		fEgresos.add(eM6);
+		fSaldo.add(sM1);
+		fSaldo.add(sM2);
+		fSaldo.add(sM3);
+		fSaldo.add(sM4);
+		fSaldo.add(sM5);
+		fSaldo.add(sM6);
+		if (resumen[0][0] != null)
+		{
+			for (int x = resumen[0].length - 1, z = lMeses.size() - 1; x > resumen[0].length - 7; x--, z--)
+			{
+				fIngresos.get(z).setText(resumen[2][x]);
+				fEgresos.get(z).setText(resumen[3][x]);
+				fSaldo.get(z).setText(resumen[1][x]);
+				if (resumen[0][x].matches("[0-9]{4}-01"))
+				{
+					lMeses.get(z).setText("Enero");
+				} else if (resumen[0][x].matches("[0-9]{4}-02"))
+				{
+					lMeses.get(z).setText("Febrero");
+				} else if (resumen[0][x].matches("[0-9]{4}-03"))
+				{
+					lMeses.get(z).setText("Marzo");
+				} else if (resumen[0][x].matches("[0-9]{4}-04"))
+				{
+					lMeses.get(z).setText("Abril");
+				} else if (resumen[0][x].matches("[0-9]{4}-05"))
+				{
+					lMeses.get(z).setText("Mayo");
+				} else if (resumen[0][x].matches("[0-9]{4}-06"))
+				{
+					lMeses.get(z).setText("Junio");
+				} else if (resumen[0][x].matches("[0-9]{4}-07"))
+				{
+					lMeses.get(z).setText("Julio");
+				} else if (resumen[0][x].matches("[0-9]{4}-08"))
+				{
+					lMeses.get(z).setText("Agosto");
+				} else if (resumen[0][x].matches("[0-9]{4}-09"))
+				{
+					lMeses.get(z).setText("Septiembre");
+				} else if (resumen[0][x].matches("[0-9]{4}-10"))
+				{
+					lMeses.get(z).setText("Octubre");
+				} else if (resumen[0][x].matches("[0-9]{4}-11"))
+				{
+					lMeses.get(z).setText("Noviembre");
+				} else if (resumen[0][x].matches("[0-9]{4}-12"))
+				{
+					lMeses.get(z).setText("Diciembre");
+				}
+			}
+		}
+	}
+	private ChartPanel crearGraphMes()
+	{
+		ControlPrincipal control = new ControlPrincipal(usuario);
+		String[][] resumen = control.resumenMes();
+		dataSetMes = new DefaultCategoryDataset();
+		if (resumen[0][0] != null)
+		{
+			for (int x = 0; x < resumen[0].length; x++)
+			{
+				dataSetMes.setValue(Integer.parseInt(resumen[1][x]), "Saldo", resumen[0][x]);
+			}
+		}
+		JFreeChart chart = ChartFactory.createBarChart("Resumen Mensual", "Mes", "Saldo", dataSetMes,
+				PlotOrientation.VERTICAL, false, true, false);
+		chart.getPlot().setBackgroundPaint(new Color(0, 204, 204));
+		chart.getCategoryPlot().getRenderer().setSeriesPaint(0, new Color(21, 21, 21));
+		chart.setBackgroundPaint(new Color(0, 204, 204));
+		ChartPanel graph = new ChartPanel(chart);
+		return graph;
+	}
+	private ChartPanel crearGraphDoc()
+	{
+		ControlPrincipal control = new ControlPrincipal(usuario);
+		int[] resumen = control.resumenDoc();
+		dataSetDoc = new DefaultCategoryDataset();
+		dataSetDoc.setValue(resumen[0], "Saldo", "Efectivo");
+		dataSetDoc.setValue(resumen[1], "Saldo", "Transferencia");
+		dataSetDoc.setValue(resumen[2], "Saldo", "Credito");
+		JFreeChart chart = ChartFactory.createBarChart("Resumen por Documentos", "Documento", "Saldo", dataSetDoc,
+				PlotOrientation.VERTICAL, false, true, false);
+		chart.getPlot().setBackgroundPaint(new Color(0, 204, 204));
+		chart.getCategoryPlot().getRenderer().setSeriesPaint(0, new Color(21, 21, 21));
+		chart.setBackgroundPaint(new Color(0, 204, 204));
+		ChartPanel graph = new ChartPanel(chart);
+		return graph;
+	}
+	private void actualizarGraphMes()
+	{
+		dataSetMes.clear();
+		ControlPrincipal control = new ControlPrincipal(usuario);
+		String[][] resumen = control.resumenMes();
+		if (resumen[0][0] != null)
+		{
+			for (int x = 0; x < resumen[0].length; x++)
+			{
+				dataSetMes.setValue(Integer.parseInt(resumen[1][x]), "Saldo", resumen[0][x]);
+			}
+		}
+	}
+	private void actualizarGraphDoc()
+	{
+		ControlPrincipal control = new ControlPrincipal(usuario);
+		dataSetDoc.clear();
+		int[] resumen = control.resumenDoc();
+		dataSetDoc.setValue(resumen[0], "Saldo", "Efectivo");
+		dataSetDoc.setValue(resumen[1], "Saldo", "Transferencia");
+		dataSetDoc.setValue(resumen[2], "Saldo", "Credito");
 	}
 	public static void main(String[] args)
 	{
