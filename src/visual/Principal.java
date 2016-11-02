@@ -971,8 +971,9 @@ public class Principal
 		fSaldo.add(sM6);
 		if (resumen[0][0] != null)
 		{
-			for (int x = resumen[0].length - 1, z = lMeses.size() - 1; x > resumen[0].length - 7; x--, z--)
+			for (int x = resumen[0].length - 1, z = lMeses.size() - 1; x > resumen[0].length - 7&& x >= 0; x--, z--)
 			{
+				System.out.println(x);
 				fIngresos.get(z).setText(resumen[2][x]);
 				fEgresos.get(z).setText(resumen[3][x]);
 				fSaldo.get(z).setText(resumen[1][x]);
