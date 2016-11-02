@@ -9,10 +9,10 @@ import java.io.IOException;
 
 public class Archivo
 {
-	File archivo;
-	FileReader fr;
-	BufferedReader br;
-	FileWriter fw;
+	protected File archivo;
+	protected FileReader fr;
+	protected BufferedReader br;
+	protected FileWriter fw;
 
 	public Archivo(String archivo)
 	{
