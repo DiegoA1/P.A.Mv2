@@ -180,10 +180,6 @@ public class Login{
     private void bRegistrarActionPerformed(ActionEvent evt) {                                          
         Registro registro = new Registro();
         frame.dispose();
-    }                       
-    public static void main(String args[]) {
-
-         Login ventana =  new Login();
-    }
+    }               
                  
 }

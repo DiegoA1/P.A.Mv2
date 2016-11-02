@@ -34,10 +34,14 @@ public class Archivo
 		String os = System.getProperty("os.name");
 		if (os.contains("Windows"))
 		{
-			ruta = "C:\\P.A.M\\" + archivo;
+			ruta = "C:\\P.A.M\\";
+			new File(ruta).mkdir();
+			ruta+= archivo;
 		} else if (os.contains("Linux"))
 		{
-			ruta = System.getProperty("user.home") + "/P.A.M/" + archivo;
+			ruta = System.getProperty("user.home") + "/P.A.M/";
+			new File(ruta).mkdir();
+			ruta += archivo;
 		}
 		return ruta;
 	}
