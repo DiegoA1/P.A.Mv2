@@ -1,41 +1,16 @@
 package visual;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-import javax.swing.LayoutStyle;
-import javax.swing.WindowConstants;
-import javax.swing.table.DefaultTableModel;
-
+import java.awt.*;
+import java.awt.event.*;
+import java.text.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.table.*;
 import org.jdesktop.swingx.JXDatePicker;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
+import org.jfree.chart.*;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
-import utiles.*;
-
-import java.util.ArrayList;
+import utiles.ControlPrincipal;
 
 public class Principal
 {
@@ -118,6 +93,7 @@ public class Principal
 	private String usuario;
 	private DefaultCategoryDataset dataSetMes;
 	private DefaultCategoryDataset dataSetDoc;
+
 	public Principal(String usuario)
 	{
 		this.usuario = usuario;
@@ -875,6 +851,8 @@ public class Principal
 								.addGap(0, 0, 0).addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
 										Short.MAX_VALUE)));
 		principal.pack();
+		principal.setLocationRelativeTo(null);
+		principal.setVisible(true);
 	}
 	private void resumenActionPerformed(ActionEvent evt)
 	{
@@ -1095,10 +1073,5 @@ public class Principal
 		dataSetDoc.setValue(resumen[0], "Saldo", "Efectivo");
 		dataSetDoc.setValue(resumen[1], "Saldo", "Transferencia");
 		dataSetDoc.setValue(resumen[2], "Saldo", "Credito");
-	}
-	public static void main(String[] args)
-	{
-		Principal ventana = new Principal("Prueba3");
-		ventana.principal.setVisible(true);
 	}
 }

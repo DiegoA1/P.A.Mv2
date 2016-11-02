@@ -3,23 +3,18 @@ package utiles;
 import java.time.YearMonth;
 import java.util.ArrayList;
 
-public class ControlPrincipal
+public class ControlPrincipal extends Archivo
 {
-	private String ruta;
-	private String usuario;
-	private Archivo archivo;
 
 	public ControlPrincipal(String usuario)
 	{
-		this.usuario = usuario;
-		getRuta();
-		archivo = new Archivo(ruta);
+		super(usuario);
 	}
 	public void añadir(String fecha, String documento, String fd, String desc, String ing, String egr)
 	{
 		int id = 1;
 		int saldo = 0;
-		String[] arch = archivo.entregarProcesado();
+		String[] arch = entregarProcesado();
 		String[] lastRow = arch[arch.length - 1].split(";");
 		try
 		{
@@ -29,11 +24,11 @@ public class ControlPrincipal
 		{
 		}
 		String fila = id + ";" + fecha + ";" + documento + ";" + fd + ";" + desc + ";" + ing + ";" + egr + ";" + saldo;
-		archivo.escribirArchivo(fila);
+		escribirArchivo(fila);
 	}
 	public void modificarFila(String id, String fecha, String documento, String fd, String desc, String ing, String egr)
 	{
-		String[] arch = archivo.entregarProcesado();
+		String[] arch = entregarProcesado();
 		for (int x = 0; x < arch.length; x++)
 		{
 			if (arch[x].split(";")[0].equals(id))
@@ -43,16 +38,16 @@ public class ControlPrincipal
 			}
 		}
 		actSaldos();
-		archivo.actArchivo(arch);
+		actArchivo(arch);
 	}
 	public void eliminarFila(String id)
 	{
-		archivo.borrarLinea(id);
+		borrarLinea(id);
 		actSaldos();
 	}
 	public void actSaldos()
 	{
-		String[] arch = archivo.entregarProcesado();
+		String[] arch = entregarProcesado();
 		for (int x = 0; x < arch.length; x++)
 		{
 			int saldoAnterior = 0;
@@ -75,33 +70,33 @@ public class ControlPrincipal
 			textAux += saldo;
 			arch[x] = textAux;
 		}
-		archivo.actArchivo(arch);
+		actArchivo(arch);
 	}
 	public String[] getLastRow()
 	{
-		String[] arch = archivo.entregarProcesado();
+		String[] arch = entregarProcesado();
 		return arch[arch.length - 1].split(";");
 	}
 	public String[] getRow(int id)
 	{
-		String[] arch = archivo.entregarProcesado();
+		String[] arch = entregarProcesado();
 		return arch[id].split(";");
 	}
 	public int getRowCount()
 	{
-		String[] arch = archivo.entregarProcesado();
+		String[] arch = entregarProcesado();
 		return arch.length;
 	}
 	public boolean isFiled()
 	{
-		return (archivo.leerArchivo().length() > 1);
+		return (leerArchivo().length() > 1);
 	}
 	public String[][] resumenMes()
 	{
 		String[][] fin = new String[4][1];
-		if (archivo.leerArchivo().length() > 5)
+		if (leerArchivo().length() > 5)
 		{
-			String[] arch = archivo.entregarProcesado();
+			String[] arch = entregarProcesado();
 			ArrayList<String> fechas = new ArrayList<String>();
 			ArrayList<String> ings = new ArrayList<String>();
 			ArrayList<String> egrs = new ArrayList<String>();
@@ -174,9 +169,9 @@ public class ControlPrincipal
 	}
 	public int[] resumenDoc()
 	{
-		String[] arch = archivo.entregarProcesado();
+		String[] arch = entregarProcesado();
 		int[] docs = { 0, 0, 0};
-		if (archivo.leerArchivo().length() > 5)
+		if (leerArchivo().length() > 5)
 		{
 			for (int x = 0; x < arch.length; x++)
 			{
@@ -197,15 +192,5 @@ public class ControlPrincipal
 		}
 		return docs;
 	}
-	public void getRuta()
-	{
-		String os = System.getProperty("os.name");
-		if (os.contains("Windows"))
-		{
-			this.ruta = "C:\\P.A.M\\archivo";
-		} else if (os.contains("Linux"))
-		{
-			this.ruta = System.getProperty("user.home") + "/P.A.M/" + this.usuario;
-		}
-	}
+	
 }

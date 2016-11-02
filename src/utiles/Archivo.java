@@ -14,18 +14,32 @@ public class Archivo
 	BufferedReader br;
 	FileWriter fw;
 
-	public Archivo(String ruta)
+	public Archivo(String archivo)
 	{
+		String ruta = getRuta(archivo);
 		try
 		{
-			archivo = new File(ruta);
-			if (!archivo.exists())
+			this.archivo = new File(ruta);
+			if (!this.archivo.exists())
 			{
-				archivo.createNewFile();
+				this.archivo.createNewFile();
 			}
 		} catch (Exception e)
 		{
 		}
+	}
+	public String getRuta(String archivo)
+	{
+		String ruta = "";
+		String os = System.getProperty("os.name");
+		if (os.contains("Windows"))
+		{
+			ruta = "C:\\P.A.M\\" + archivo;
+		} else if (os.contains("Linux"))
+		{
+			ruta = System.getProperty("user.home") + "/P.A.M/" + archivo;
+		}
+		return ruta;
 	}
 	public String leerArchivo()
 	{
@@ -66,19 +80,19 @@ public class Archivo
 	public void borrarLinea(String id)
 	{
 		String[] arch = entregarProcesado();
-		for(int x = 0; x < arch.length; x++)
+		for (int x = 0; x < arch.length; x++)
 		{
-			if(arch[x].split(";")[0].equals(id))
+			if (arch[x].split(";")[0].equals(id))
 			{
-				arch[x]="";
+				arch[x] = "";
 				break;
 			}
 		}
-		String[] nArch = new String[arch.length-1];
-		int z =0;
-		for(int x = 0; x < arch.length; x++)
+		String[] nArch = new String[arch.length - 1];
+		int z = 0;
+		for (int x = 0; x < arch.length; x++)
 		{
-			if(arch[x].length()>1)
+			if (arch[x].length() > 1)
 			{
 				nArch[z] = arch[x];
 				z++;
@@ -90,12 +104,14 @@ public class Archivo
 	{
 		clearFile();
 		abrirEscribir();
-		for(int x = 0; x < texto.length;x++)
+		for (int x = 0; x < texto.length; x++)
 		{
 			try
 			{
-				fw.append(texto[x]+"*!");
-			} catch (IOException e){}
+				fw.append(texto[x] + "*!");
+			} catch (IOException e)
+			{
+			}
 		}
 		cerrarEscribir();
 	}
